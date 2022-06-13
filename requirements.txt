@@ -1,0 +1,7 @@
+dash==2.5.0
+dash_bootstrap_components==1.1.0
+dash_leaflet==0.1.23
+Flask==2.1.2
+pandas==1.4.2
+pymongo==4.1.1
+requests==2.28.0
