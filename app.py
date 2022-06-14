@@ -24,6 +24,9 @@ external_stylesheets = [dbc.themes.BOOTSTRAP]
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 app.config.suppress_callback_exceptions=True
 app.title = 'GeoLoc'
+
+server = app.server
+
 app.layout = html.Div(id='app', children=[
     dbc.Row([
         dbc.Col(
