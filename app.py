@@ -10,16 +10,23 @@ from requests.auth import HTTPBasicAuth
 from bson.objectid import ObjectId
 import os
 
-df = pd.read_csv('cidades.csv')
+
 api_url = 'http://vmisq.xyz/datagateway/geoloc/'
 user = os.environ['user']
 passwd = os.environ['pass']
-image_url = 'https://cdn-icons.flaticon.com/png/512/3218/premium/3218347.png?token=exp=1655159813~hmac=2cc2960a5d97587d0b32e5b5824badcf'
 url = 'https://tiles.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png'
 attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 subdomains = 'abcd'
 maxZoom = 20
 external_stylesheets = [dbc.themes.BOOTSTRAP]
+
+try:
+    cidades = requests.get(api_url + 'get_random_location', auth = HTTPBasicAuth(user, passwd)).json()['values']
+    df = pd.DataFrame(cidades)
+    df = df[['cidade', 'pais', 'lat', 'lon']]
+except Exception as e:
+    df = pd.read_csv('cidades.csv')
+    df = df[['cidade', 'pais', 'lat', 'lon']]
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 app.config.suppress_callback_exceptions=True
@@ -33,7 +40,13 @@ app.layout = html.Div(id='app', children=[
             html.Div([
                 html.Div(
                     [
-                        html.Div(html.Img(src=image_url, style={'width':'60%', 'margin': 'auto'}), style={'text-align': 'center'}),
+                        html.Div(
+                            html.Img(
+                                src=app.get_asset_url('geoloc.png'),
+                                style={'width':'60%', 'margin': 'auto'}
+                            ),
+                            style={'text-align': 'center'}
+                        ),
                         html.H1('GeoLoc', style={'text-align': 'center'}), 
                     ],
                     style={'height': '20hv'}
@@ -176,20 +189,20 @@ def start_game(n_clicks, round_n, lat, lon, hist, score, city, country, cur_lat,
             return no_update, no_update, no_update, no_update, no_update, no_update, hist, score, app
         else:
             round_n += 1
-            try:
-                city, country, cur_lat, cur_lon = requests.get(api_url + 'get_random_location', auth = HTTPBasicAuth(user, passwd)).json()['values']
-            except Exception as e:
-                print(e)
-                dff = df.copy()
-                city, country, cur_lat, cur_lon = dff.sample(n=1).iloc[0]
-            return city, country, cur_lat, cur_lon, round_n, f"Rodada {round_n:} de 10", hist, score, no_update
-    elif city == '-' and country == '-':
-        try:
-            city, country, cur_lat, cur_lon = requests.get(api_url + 'get_random_location', auth = HTTPBasicAuth(user, passwd)).json()['values']
-        except Exception as e:
-            print(e)
+            #try:
+            #    city, country, cur_lat, cur_lon = requests.get(api_url + 'get_random_location', auth = HTTPBasicAuth(user, passwd)).json()['values']
+            #except Exception as e:
+            #    print(e)
             dff = df.copy()
             city, country, cur_lat, cur_lon = dff.sample(n=1).iloc[0]
+            return city, country, cur_lat, cur_lon, round_n, f"Rodada {round_n:} de 10", hist, score, no_update
+    elif city == '-' and country == '-':
+        #try:
+        #    city, country, cur_lat, cur_lon = requests.get(api_url + 'get_random_location', auth = HTTPBasicAuth(user, passwd)).json()['values']
+        #except Exception as e:
+        #    print(e)
+        dff = df.copy()
+        city, country, cur_lat, cur_lon = dff.sample(n=1).iloc[0]
         try:
             requests.get(api_url + f'insert_player/{request.remote_addr}/{datetime.now()}/inicio/0', auth = HTTPBasicAuth(user, passwd))
         except Exception as e:
