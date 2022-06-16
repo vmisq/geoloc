@@ -14,7 +14,7 @@ import math
 
 
 # definitions
-api_url = 'http://vmisq.xyz/datagateway/geoloc/'
+api_url = 'https://vmisq.xyz/datagateway/geoloc/'
 user = os.environ['user']
 passwd = os.environ['pass']
 url = 'https://tiles.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png'
@@ -30,7 +30,7 @@ try:
     df = pd.DataFrame(cidades)
     df = df[['cidade', 'pais', 'lat', 'lon']]
 except Exception as e:
-    df = pd.read_csv('cidades.csv')
+    df = pd.read_csv('assets/cidades.csv')
     df = df[['cidade', 'pais', 'lat', 'lon']]
 
 
