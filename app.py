@@ -6,30 +6,35 @@ import dash_bootstrap_components as dbc
 from flask import request
 import pandas as pd
 from datetime import datetime
-import requests
-from requests.auth import HTTPBasicAuth
+import httplib2
 from bson.objectid import ObjectId
 import os
 import math
-
+import json
 
 # definitions
 api_url = 'https://vmisq.xyz/datagateway/geoloc/'
 user = os.environ['user']
 passwd = os.environ['pass']
+h = httplib2.Http()
+h.add_credentials(user, passwd)
+get = lambda x: json.loads(h.request(x, "GET", body="")[1].decode('utf-8'))
+
 url = 'https://tiles.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png'
 attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 subdomains = 'abcd'
 maxZoom = 20
+
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 
 # main data
 try:
-    cidades = requests.get(api_url + 'get_random_location', auth = HTTPBasicAuth(user, passwd)).json()['values']
+    cidades = get(api_url + 'get_random_location')['values']
     df = pd.DataFrame(cidades)
     df = df[['cidade', 'pais', 'lat', 'lon']]
 except Exception as e:
+    print(e)
     df = pd.read_csv('assets/cidades.csv')
     df = df[['cidade', 'pais', 'lat', 'lon']]
 
@@ -54,7 +59,7 @@ def get_next_location(n_clicks, round_n, lat, lon, hist, score, city, country, c
         dff = df.copy()
         city, country, cur_lat, cur_lon = dff.sample(n=1).iloc[0]
         try:
-            requests.get(api_url + f'insert_player/{request.remote_addr}/{datetime.now()}/inicio/0', auth = HTTPBasicAuth(user, passwd))
+            get(api_url + f'insert_player/{request.remote_addr}/{datetime.now()}/inicio/0')
         except Exception as e:
             print(e)
         return city, country, cur_lat, cur_lon, no_update, no_update, no_update, no_update, no_update, no_update, 'Verificar Seleção!'
@@ -103,9 +108,9 @@ def verify_location(n_clicks, round_n, lat, lon, hist, score, city, country, cur
 
 def go_to_scoreboard(n_clicks, round_n, lat, lon, hist, score, city, country, cur_lat, cur_lon):
     try:
-        requests.get(api_url + f'insert_player/{request.remote_addr}/{datetime.now()}/fim/{score}', auth = HTTPBasicAuth(user, passwd))
-        x_id = requests.get(api_url + f'insert_score/NONE/{score}/{datetime.now()}', auth = HTTPBasicAuth(user, passwd)).json()['values']
-        scores = requests.get(api_url + 'get_scores', auth = HTTPBasicAuth(user, passwd)).json()['values']
+        get(api_url + f'insert_player/{request.remote_addr}/{datetime.now()}/fim/{score}')
+        x_id = get(api_url + f'insert_score/NONE/{score}/{datetime.now()}')['values']
+        scores = get(api_url + 'get_scores')['values']
         scoreboard = pd.DataFrame(eval(scores))
         scoreboard.loc[scoreboard['_id']==ObjectId(x_id), 'user_name'] = 'Você!'
         scoreboard['Ranking'] = scoreboard.index + 1
@@ -270,7 +275,7 @@ def start_game(n_clicks, round_n, lat, lon, hist, score, city, country, cur_lat,
 )
 def update_output(input2, mongo_id):
     try:
-        requests.get(api_url + f'update_user_name/{mongo_id}/{input2}', auth = HTTPBasicAuth(user, passwd))
+        get(api_url + f'update_user_name/{mongo_id}/{input2}')
     except Exception as e:
         print(e)
     return no_update
