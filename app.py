@@ -199,11 +199,12 @@ app.layout = html.Div(id='app', children=[
             html.Div([
                 dl.Map(
                     [
-                        dl.TileLayer(url=url, attribution=attribution, subdomains=subdomains, maxZoom=maxZoom),
+                        dl.TileLayer(url=url, attribution=attribution, subdomains=subdomains, maxZoom=maxZoom, noWrap=True),
                         dl.LayerGroup(id="layer"),
                         dl.LayerGroup(id="layer2"),
                     ],
                     id="map",
+                    zoom=2,
                     style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}
                 ),
             ]),
