@@ -162,18 +162,13 @@ app.layout = html.Div(id='app', children=[
         dbc.Col(
             html.Div([
                 html.Div(
-                    [
-                        html.Div(
-                            html.Img(
-                                src=app.get_asset_url('geoloc.png'),
-                                style={'width':'60%', 'margin': 'auto'}
-                            ),
-                            style={'text-align': 'center'}
-                        ),
-                        html.H1('GeoLoc', style={'text-align': 'center'}), 
-                    ],
-                    style={'height': '20hv'}
+                    html.Img(
+                        src=app.get_asset_url('geoloc.png'),
+                        style={'width':'60%', 'margin': 'auto'}
+                    ),
+                    style={'text-align': 'center'}
                 ),
+                html.H1('GeoLoc', style={'text-align': 'center'}), 
                 html.P(id='round-n', children='Rodada 1 de 10', style={'text-align': 'center'}),
                 html.P('Cidade', style={'margin-left': '10px'}),
                 html.P(id='city', children='-', style={'text-align': 'center'}),
@@ -187,6 +182,16 @@ app.layout = html.Div(id='app', children=[
                 dcc.Store(id='round_n', data=1),
                 dcc.Store(id='cur_lat', data='-'),
                 dcc.Store(id='cur_lon', data='-'),
+                html.Div(
+                    html.A(
+                        html.Img(
+                            src=app.get_asset_url('github.png'),
+                            style={'width':'40%', 'margin': 'auto'}
+                        )
+                        , href='https://github.com/vmisq/geoloc'
+                    )
+                    , style={'position': 'absolute', 'bottom': '0'}
+                )
             ]),
             width=2
         ),
