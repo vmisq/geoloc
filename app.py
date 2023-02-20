@@ -13,7 +13,7 @@ import math
 import json
 
 # definitions
-api_url = 'https://vmisq.xyz/datagateway/geoloc/'
+api_url = os.environ['api_url']
 user = os.environ['user']
 passwd = os.environ['pass']
 h = httplib2.Http()
