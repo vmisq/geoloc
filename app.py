@@ -33,11 +33,13 @@ try:
     raise Exception('Skip') # do not query database for latency
     cidades = get(api_url + 'get_random_location')['values']
     df = pd.DataFrame(cidades)
-    df = df[['cidade', 'pais', 'lat', 'lon']]
 except Exception as e:
     print(e)
     df = pd.read_csv('assets/cidades.csv')
-    df = df[['cidade', 'pais', 'lat', 'lon']]
+finally:
+    df = df.loc[df['population']>=199_999]
+    df = df[['city', 'country', 'lat', 'lng']]
+    df.columns = ['cidade', 'pais', 'lat', 'lon']
 
 
 #functions
