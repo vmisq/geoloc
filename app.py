@@ -39,8 +39,6 @@ except Exception as e:
 finally:
     df = df.loc[df['population']>=199_999]
     df = df[['city', 'country', 'lat', 'lng']]
-    df['lat'] = pd.to_numeric(df['lat'])
-    df['lng'] = pd.to_numeric(df['lng'])
     df.columns = ['cidade', 'pais', 'lat', 'lon']
 
 
