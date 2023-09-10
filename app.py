@@ -30,6 +30,7 @@ external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 # main data
 try:
+    raise Exception('Skip') # do not query database for latency
     cidades = get(api_url + 'get_random_location')['values']
     df = pd.DataFrame(cidades)
     df = df[['cidade', 'pais', 'lat', 'lon']]
