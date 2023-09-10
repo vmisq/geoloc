@@ -1,6 +1,6 @@
 dash
 dash_bootstrap_components
-dash_leaflet
+dash_leaflet==0.1.28
 Flask
 pandas
 pymongo
